@@ -1,7 +1,11 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.service.ItemService;
+
+import java.util.List;
 
 /**
  * TODO Sprint add-controllers.
@@ -9,4 +13,36 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/items")
 public class ItemController {
+    private final ItemService itemService;
+
+    public ItemController(ItemService itemService) {
+        this.itemService = itemService;
+    }
+
+    @PostMapping
+    public ItemDto add(@Valid @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") long userId) {
+        return itemService.add(itemDto, userId);
+    }
+
+    @PatchMapping("/{itemId}")
+    public ItemDto update(@PathVariable long itemId, @RequestHeader("X-Sharer-User-Id") long userId,
+                          @RequestBody ItemDto itemDto) {
+        return itemService.update(itemId, itemDto, userId);
+    }
+
+    @GetMapping("/{itemId}")
+    public ItemDto getItem(@PathVariable long itemId) {
+        return itemService.getItem(itemId);
+    }
+
+    @GetMapping
+    public List<ItemDto> getAllItems(@RequestHeader("X-Sharer-User-Id") long userId) {
+        return itemService.getAllItems(userId);
+    }
+
+    @GetMapping("/search")
+    public List<ItemDto> search(@RequestParam(required = false) String text) {
+        return itemService.search(text);
+    }
+
 }
