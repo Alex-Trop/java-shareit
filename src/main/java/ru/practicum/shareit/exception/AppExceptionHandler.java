@@ -43,4 +43,9 @@ public class AppExceptionHandler {
 
         return new ResponseEntity<>(new ErrorResponse(violation), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<ErrorResponse> handleThrowable(Throwable e) {
+        return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

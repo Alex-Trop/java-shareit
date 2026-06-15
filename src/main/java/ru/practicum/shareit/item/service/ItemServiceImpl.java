@@ -1,12 +1,15 @@
 package ru.practicum.shareit.item.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundError;
+import ru.practicum.shareit.exception.ResourceAlreadyExistsError;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.InMemoryItemStorage;
+import ru.practicum.shareit.request.storage.InMemoryItemRequestStorage;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.storage.InMemoryUserStorage;
 
@@ -18,14 +21,12 @@ import static ru.practicum.shareit.exception.ErrorDetails.*;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final InMemoryItemStorage itemStorage;
     private final InMemoryUserStorage userStorage;
-
-    public ItemServiceImpl(InMemoryItemStorage itemStorage, InMemoryUserStorage userStorage) {
-        this.itemStorage = itemStorage;
-        this.userStorage = userStorage;
-    }
+    private final InMemoryItemRequestStorage itemRequestStorage;
+    private static final long TMP_ID = 0;
 
     @Override
     public ItemDto add(ItemDto itemDto, long userId) {
@@ -36,7 +37,19 @@ public class ItemServiceImpl implements ItemService {
         if (foundUser == null) {
             throw new NotFoundError(USER_NOT_FOUND);
         }
-        return ItemMapper.toItemDto(itemStorage.add(itemDto, userId));
+
+        Item newItem = new Item(
+                TMP_ID,
+                itemDto.getName(),
+                itemDto.getDescription(),
+                itemDto.getAvailable(),
+                userId,
+                itemDto.getItemRequestId() == 0 ? null : itemRequestStorage.getItemRequestById(itemDto.getItemRequestId()));
+
+        if (itemStorage.checkDuplicates(newItem)) {
+            throw new ResourceAlreadyExistsError(ITEM_DUPLICATE_ERROR);
+        }
+        return ItemMapper.toItemDto(itemStorage.add(newItem));
     }
 
     @Override

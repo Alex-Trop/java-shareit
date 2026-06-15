@@ -2,43 +2,27 @@ package ru.practicum.shareit.item.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exception.ResourceAlreadyExistsError;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.storage.InMemoryItemRequestStorage;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.exception.ErrorDetails.ITEM_DUPLICATE_ERROR;
-
 @Component
 @Slf4j
 public class InMemoryItemStorage {
-    private final InMemoryItemRequestStorage itemRequestStorage = new InMemoryItemRequestStorage();
     private static final HashMap<Long, Item> allItems = new HashMap<>();
     private static long id = 0;
 
-    private boolean checkDuplicates(Item item) {
+    public boolean checkDuplicates(Item item) {
         return allItems.containsValue(item);
     }
 
-    public Item add(ItemDto itemDto, long userId) {
+    public Item add(Item newItem) {
         id++;
-
-        Item newItem = new Item(
-                id,
-                itemDto.getName(),
-                itemDto.getDescription(),
-                itemDto.getAvailable(),
-                userId,
-                itemDto.getItemRequestId() == 0 ? null : itemRequestStorage.getItemRequestById(itemDto.getItemRequestId()));
-
-        if (checkDuplicates(newItem)) {
-            throw new ResourceAlreadyExistsError(ITEM_DUPLICATE_ERROR);
-        }
-        allItems.put(newItem.getId(), newItem);
+        newItem.setId(id);
+        allItems.put(id, newItem);
         log.info("Добавлена вещь: " + newItem);
         return newItem;
     }
