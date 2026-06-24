@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -8,12 +8,9 @@ import lombok.Data;
 import static ru.practicum.shareit.exception.ErrorDetails.BLANK_NAME_ERROR;
 import static ru.practicum.shareit.exception.ErrorDetails.EMAIL_FORMAT_ERROR;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Data
 @AllArgsConstructor
-public class User {
+public class UserDto {
     private long id;
 
     @NotBlank(message = BLANK_NAME_ERROR)
