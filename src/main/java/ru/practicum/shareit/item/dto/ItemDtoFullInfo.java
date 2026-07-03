@@ -4,15 +4,16 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ru.practicum.shareit.booking.Booking;
+
+import java.util.List;
 
 import static ru.practicum.shareit.exception.ErrorDetails.*;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Data
 @AllArgsConstructor
-public class ItemDto {
+public class ItemDtoFullInfo {
+    //и бронирования, и комментарии - для владельца по get items
     private Long id;
 
     @NotBlank(message = BLANK_NAME_ERROR)
@@ -25,4 +26,10 @@ public class ItemDto {
     private Boolean available;
 
     private long itemRequestId;
+
+    private Booking lastBooking;
+
+    private Booking nextBooking;
+
+    List<CommentDto> comments;
 }

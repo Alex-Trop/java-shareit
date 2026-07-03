@@ -1,38 +1,26 @@
 package ru.practicum.shareit.booking.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.practicum.shareit.booking.BookingStatus;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
 import static ru.practicum.shareit.exception.ErrorDetails.DATETIME_ERROR;
 
-/**
- * TODO Sprint add-bookings.
- */
 @Data
 @AllArgsConstructor
-public class BookingDto {
-    private Long id;
+public class BookingPostDto {
+    @NotNull
+    @Positive
+    private long itemId;
 
     @NotNull(message = DATETIME_ERROR)
+   // @FutureOrPresent(message = DATETIME_ERROR)
     private LocalDateTime start;
 
     @NotNull(message = DATETIME_ERROR)
+    //@Future(message = DATETIME_ERROR)
     private LocalDateTime end;
-
-    @NotNull
-    private Item item;
-
-    @NotNull
-    private User booker;
-
-    @NotNull
-    @JsonProperty("status")
-    BookingStatus bookingStatus;
 }
