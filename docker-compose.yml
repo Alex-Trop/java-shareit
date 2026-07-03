@@ -17,6 +17,9 @@ jobs:
       - name: Start Postgres DB Container
         run: docker compose up -d postgres-db
 
+      - name: Wait for Database to boot up
+        run: sleep 10
+
       - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
