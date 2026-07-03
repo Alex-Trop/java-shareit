@@ -120,7 +120,7 @@ public class BookingServiceImpl implements BookingService {
 
         List<Booking> userBookings = new ArrayList<>();
 
-        switch(state) {
+        switch (state) {
             case ALL -> userBookings = bookingRepository.getOwnerAllBookings(userId);
             case CURRENT -> userBookings = bookingRepository.getOwnerCurrentBookings(userId, LocalDateTime.now());
             case PAST -> userBookings = bookingRepository.getOwnerPastBookings(userId, LocalDateTime.now());
