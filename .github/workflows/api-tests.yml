@@ -5,4 +5,29 @@ on:
 
 jobs:
   build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres-db:
+        image: postgres:16
+        env:
+          POSTGRES_DB: shareit
+          POSTGRES_USER: postgres_user
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     uses: yandex-praktikum/java-shareit/.github/workflows/api-tests.yml@ci
+
+    with:
+      env:
+        SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/shareit
+        SPRING_DATASOURCE_USERNAME: postgres_user
+        SPRING_DATASOURCE_PASSWORD: password
+        TZ: Asia/Novosibirsk
+        JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Novosibirsk
