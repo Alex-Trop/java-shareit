@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS item_requests (
 id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 description varchar NOT NULL,
 requestor_id BIGINT REFERENCES users(id) NOT NULL,
-created timestamptz NOT NULL
+created timestamp NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS items (
@@ -24,8 +24,8 @@ CONSTRAINT unique_item UNIQUE (name, description, owner_id, item_request_id)
 
 CREATE TABLE IF NOT EXISTS bookings (
 id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-start_time timestamptz NOT NULL,
-end_time timestamptz NOT NULL,
+start_time timestamp NOT NULL,
+end_time timestamp NOT NULL,
 item_id BIGINT REFERENCES items(id) NOT NULL,
 booker_id BIGINT REFERENCES users(id) NOT NULL,
 booking_status varchar NOT NULL,
@@ -37,5 +37,5 @@ id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 text varchar NOT NULL,
 author_name varchar NOT NULL,
 item_id BIGINT REFERENCES items(id) NOT NULL,
-created timestamptz NOT NULL
+created timestamp NOT NULL
 );
