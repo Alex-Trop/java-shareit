@@ -17,10 +17,8 @@ public class BookingPostDto {
     private long itemId;
 
     @NotNull(message = DATETIME_ERROR)
-   // @FutureOrPresent(message = DATETIME_ERROR)
     private LocalDateTime start;
 
     @NotNull(message = DATETIME_ERROR)
-    //@Future(message = DATETIME_ERROR)
     private LocalDateTime end;
 }

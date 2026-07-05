@@ -13,10 +13,9 @@ import static ru.practicum.shareit.exception.ErrorDetails.DATETIME_ERROR;
 /**
  * TODO Sprint add-bookings.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(exclude = "id")
 @Entity
 @Table(name = "bookings")
@@ -25,24 +24,29 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NonNull
     @NotNull(message = DATETIME_ERROR)
     @Column(name = "start_time")
     private LocalDateTime start;
 
+    @NonNull
     @NotNull(message = DATETIME_ERROR)
     @Column(name = "end_time")
     private LocalDateTime end;
 
+    @NonNull
     @NotNull
     @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
 
+    @NonNull
     @NotNull
     @ManyToOne
     @JoinColumn(name = "booker_id")
     private User booker;
 
+    @NonNull
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "booking_status")

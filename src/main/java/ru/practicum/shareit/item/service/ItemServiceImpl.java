@@ -36,8 +36,6 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
     private final ItemMapper itemMapper;
     private final CommentMapper commentMapper;
-    private static final long TMP_ID = 0;
-    private static final long POSTMAN_TEST_PAUSE = 10;
 
     @Override
     public ItemDto add(ItemDto itemDto, long userId) {
@@ -48,7 +46,6 @@ public class ItemServiceImpl implements ItemService {
         }
 
         Item newItem = new Item(
-                TMP_ID,
                 itemDto.getName(),
                 itemDto.getDescription(),
                 itemDto.getAvailable(),
@@ -89,6 +86,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDtoFullInfo getItem(long itemId) {
         log.info("Получен запрос на получение сведений о вещи " + itemId);
 
+        LocalDateTime now = LocalDateTime.now();
         Item foundItem = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundError(ITEM_NOT_FOUND));
 
@@ -103,12 +101,12 @@ public class ItemServiceImpl implements ItemService {
         List<Booking> foundBookings = bookingRepository.findAllByItemId(itemId);
 
         Optional<Booking> latest = foundBookings.stream()
-                .filter(booking -> booking.getStart().isBefore(LocalDateTime.now())
-                        && booking.getEnd().isBefore(LocalDateTime.now().minusSeconds(POSTMAN_TEST_PAUSE)))
+                .filter(booking -> booking.getStart().isBefore(now)
+                       && !booking.getEnd().isBefore(now))
                 .max(Comparator.comparing(Booking::getStart));
 
         Optional<Booking> next = foundBookings.stream()
-                .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
+                .filter(booking -> booking.getStart().isAfter(now))
                 .min(Comparator.comparing(Booking::getStart));
 
         return itemMapper.toItemDtoFullInfo(foundItem, latest, next, comments);
@@ -118,6 +116,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDtoFullInfo> getAllItems(long userId) {
         log.info("Получен запрос на получение списка всех вещей пользователя с id " + userId);
 
+        LocalDateTime now = LocalDateTime.now();
         Map<Long, Item> foundItems = itemRepository.findAllByOwner(userId)
                 .stream()
                 .collect(Collectors.toMap(Item::getId, Function.identity()));
@@ -134,12 +133,12 @@ public class ItemServiceImpl implements ItemService {
 
         for (Item item : foundItems.values()) {
             Optional<Booking> latest = foundBookings.getOrDefault(item, Collections.emptyList()).stream()
-                    .filter(booking -> booking.getStart().isBefore(LocalDateTime.now())
-                            && booking.getEnd().isBefore(LocalDateTime.now()))
+                    .filter(booking -> booking.getStart().isBefore(now)
+                            && !booking.getEnd().isBefore(now))
                     .max(Comparator.comparing(Booking::getStart));
 
             Optional<Booking> next = foundBookings.getOrDefault(item, Collections.emptyList()).stream()
-                    .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
+                    .filter(booking -> booking.getStart().isAfter(now))
                     .min(Comparator.comparing(Booking::getStart));
 
             List<CommentDto> comments = foundComments.getOrDefault(item.getId(), Collections.emptyList()).stream()
@@ -179,7 +178,6 @@ public class ItemServiceImpl implements ItemService {
         }
 
         Comment newComment = new Comment(
-                TMP_ID,
                 commentPostDto.getText(),
                 user.getName(),
                 itemId,
