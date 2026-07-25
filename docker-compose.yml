@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: spring-postgres-container
+    environment:
+      POSTGRES_DB: shareit
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: password
+      TZ: Asia/Novosibirsk
+      PGTZ: Asia/Novosibirsk
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - shareit-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres_user -d shareit"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  backend-app:
+    build: .
+    container_name: shareit-backend-container
+    ports:
+      - "8080:8080"
+    environment:
+      - TZ=Asia/Novosibirsk
+      - JAVA_TOOL_OPTIONS=-Duser.timezone=Asia/Novosibirsk
+      - SPRING_JACKSON_TIME_ZONE=Asia/Novosibirsk
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/shareit
+      - SPRING_DATASOURCE_USERNAME=postgres_user
+      - SPRING_DATASOURCE_PASSWORD=password
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    networks:
+      - shareit-network
+
+
+
+volumes:
+  pgdata:
+
+networks:
+  shareit-network:
+    driver: bridge

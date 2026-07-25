@@ -1,5 +1,6 @@
 package ru.practicum.shareit.exception;
 
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
@@ -47,5 +48,11 @@ public class AppExceptionHandler {
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<ErrorResponse> handleThrowable(Throwable e) {
         return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    //потому что в UserService используется deleteById без предварительной проверки наличия записи в БД
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ResponseEntity<ErrorResponse> handleOptimisticLockingFailureException(OptimisticLockingFailureException e) {
+        return new ResponseEntity<>(new ErrorResponse(USER_NOT_FOUND), HttpStatus.NOT_FOUND);
     }
 }

@@ -5,14 +5,13 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 import static ru.practicum.shareit.exception.ErrorDetails.*;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Data
 @AllArgsConstructor
-public class ItemDto {
+public class ItemDtoWithComment {
     private Long id;
 
     @NotBlank(message = BLANK_NAME_ERROR)
@@ -25,4 +24,6 @@ public class ItemDto {
     private Boolean available;
 
     private long itemRequestId;
+
+    List<CommentDto> comments;
 }

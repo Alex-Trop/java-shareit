@@ -11,7 +11,7 @@ import static ru.practicum.shareit.exception.ErrorDetails.EMAIL_FORMAT_ERROR;
 @Data
 @AllArgsConstructor
 public class UserDto {
-    private long id;
+    private Long id;
 
     @NotBlank(message = BLANK_NAME_ERROR)
     private String name;

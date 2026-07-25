@@ -1,9 +1,9 @@
 package ru.practicum.shareit.user;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
 import static ru.practicum.shareit.exception.ErrorDetails.BLANK_NAME_ERROR;
 import static ru.practicum.shareit.exception.ErrorDetails.EMAIL_FORMAT_ERROR;
@@ -11,9 +11,16 @@ import static ru.practicum.shareit.exception.ErrorDetails.EMAIL_FORMAT_ERROR;
 /**
  * TODO Sprint add-controllers.
  */
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
+@Entity
+@Table(name = "users")
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @NotBlank(message = BLANK_NAME_ERROR)
