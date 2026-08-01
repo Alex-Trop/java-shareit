@@ -1,0 +1,22 @@
+package ru.practicum.shareit.user.dto;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import static ru.practicum.shareit.exception.ValidationErrorDetails.BLANK_NAME_ERROR;
+import static ru.practicum.shareit.exception.ValidationErrorDetails.EMAIL_FORMAT_ERROR;
+
+@Data
+@AllArgsConstructor
+public class UserDto {
+    private Long id;
+
+    @NotBlank(message = BLANK_NAME_ERROR)
+    private String name;
+
+    @Email(message = EMAIL_FORMAT_ERROR)
+    @NotBlank(message = EMAIL_FORMAT_ERROR)
+    private String email;
+}
