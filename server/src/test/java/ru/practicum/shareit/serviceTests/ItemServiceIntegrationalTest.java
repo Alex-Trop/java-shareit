@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import ru.practicum.shareit.booking.BookingMapperImpl;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -45,6 +46,7 @@ import static ru.practicum.shareit.exception.ErrorDetails.ITEM_NOT_FOUND;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @Import({ItemServiceImpl.class, ItemMapperImpl.class, CommentMapperImpl.class, UserServiceImpl.class,
 BookingServiceImpl.class, UserMapperImpl.class, BookingMapperImpl.class})
 public class ItemServiceIntegrationalTest extends BaseIntegrationalTest {
@@ -169,6 +171,42 @@ public class ItemServiceIntegrationalTest extends BaseIntegrationalTest {
         List<ItemDtoFullInfo> foundItems = itemService.getAllItems(addedUser.getId());
 
         assertEquals(foundItems.size(), 2);
+    }
+
+    @Test
+    void shouldGetAllItemsWithBookings() {
+        UserDto addedOwner = userService.add(userDto);
+        UserDto bookerDto = new UserDto(
+                null,
+                "QPQPW CIC",
+                "wsuodsa@mail.com");
+        UserDto addedBooker = userService.add(bookerDto);
+        ItemDto addedItem = itemService.add(itemDto, addedOwner.getId());
+        ItemDto newItem = new ItemDto(
+                null,
+                "pwpqpqpq",
+                "spspspsps",
+                true,
+                null);
+        ItemDto anotherAddedItem = itemService.add(newItem, addedOwner.getId());
+
+        BookingPostDto postDto = new BookingPostDto(
+                addedItem.getId(),
+                LocalDateTime.of(2000, 12, 18, 12, 0),
+                LocalDateTime.of(2000, 12, 23,12, 0));
+
+        BookingDto addedBooking = bookingService.add(postDto, addedBooker.getId());
+
+        BookingPostDto anotherPostDto = new BookingPostDto(
+                addedItem.getId(),
+                LocalDateTime.of(2030, 12, 18, 12, 0),
+                LocalDateTime.of(2030, 12, 23,12, 0));
+
+        BookingDto anotherAddedBooking = bookingService.add(anotherPostDto, addedBooker.getId());
+
+        List<ItemDtoFullInfo> foundItems = itemService.getAllItems(addedOwner.getId());
+
+        assertTrue(foundItems.size() == 2);
     }
 
     @Test

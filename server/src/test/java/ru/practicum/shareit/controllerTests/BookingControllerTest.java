@@ -1,5 +1,6 @@
 package ru.practicum.shareit.controllerTests;
 
+import ru.practicum.shareit.exception.NotFoundError;
 import tools.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.exception.ErrorDetails.BOOKING_NOT_FOUND;
 
 @WebMvcTest(controllers = BookingController.class)
 public class BookingControllerTest {
@@ -160,5 +162,18 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].id").value(bookingDto.getId()))
                 .andExpect(jsonPath("$[1].id").value(anotherBookingDto.getId()));
+    }
+
+    @Test
+    void shouldThrowNotFoundError() throws Exception {
+        when(bookingService.getBooking(anyLong(), anyLong()))
+                .thenThrow(NotFoundError.class);
+
+        mvc.perform(get("/bookings/1")
+                .characterEncoding(StandardCharsets.UTF_8)
+                .header(header, userDto.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
     }
 }
