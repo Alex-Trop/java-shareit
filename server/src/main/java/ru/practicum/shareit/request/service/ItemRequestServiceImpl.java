@@ -110,7 +110,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             List<ItemDtoShortInfo> itemsOnRequest = new ArrayList<>();
 
             for (Item item : itemsOnRequests) {
-                if (request.getId() == item.getRequest().getId()) {
+                if (request.getId().equals(item.getRequest().getId())) {
                     itemsOnRequest.add(new ItemDtoShortInfo(
                             item.getId(),
                             item.getDescription(),
