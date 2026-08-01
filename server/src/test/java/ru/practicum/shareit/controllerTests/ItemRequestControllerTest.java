@@ -50,7 +50,7 @@ public class ItemRequestControllerTest {
             LocalDateTime.now(),
             List.of(itemShortInfo));
 
-    private final String HEADER = "X-Sharer-User-Id";
+    private final String header = "X-Sharer-User-Id";
 
     private DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
@@ -62,7 +62,7 @@ public class ItemRequestControllerTest {
         mvc.perform(post("/requests")
                 .content(mapper.writeValueAsString(postDto))
                 .characterEncoding(StandardCharsets.UTF_8)
-                .header(HEADER, 1)
+                .header(header, 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -79,7 +79,7 @@ public class ItemRequestControllerTest {
 
         mvc.perform(get("/requests")
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(HEADER, 1)
+                        .header(header, 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))

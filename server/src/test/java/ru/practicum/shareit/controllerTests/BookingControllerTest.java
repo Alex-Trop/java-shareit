@@ -71,7 +71,7 @@ public class BookingControllerTest {
             userDto,
             BookingStatus.WAITING);
 
-    private final String HEADER = "X-Sharer-User-Id";
+    private final String header = "X-Sharer-User-Id";
 
     private DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
@@ -83,7 +83,7 @@ public class BookingControllerTest {
         mvc.perform(post("/bookings")
                 .content(mapper.writeValueAsString(postDto))
                 .characterEncoding(StandardCharsets.UTF_8)
-                        .header(HEADER, userDto.getId())
+                        .header(header, userDto.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -102,7 +102,7 @@ public class BookingControllerTest {
 
         mvc.perform(patch("/bookings/1")
                         .characterEncoding(StandardCharsets.UTF_8)
-                .header(HEADER, userDto.getId())
+                .header(header, userDto.getId())
                         .queryParam("approved", "true")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -121,7 +121,7 @@ public class BookingControllerTest {
 
         mvc.perform(get("/bookings/1")
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(HEADER, userDto.getId())
+                        .header(header, userDto.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(bookingDto.getId()))
@@ -139,7 +139,7 @@ public class BookingControllerTest {
 
         mvc.perform(get("/bookings")
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(HEADER, userDto.getId())
+                        .header(header, userDto.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -154,7 +154,7 @@ public class BookingControllerTest {
 
         mvc.perform(get("/bookings/owner")
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(HEADER, userDto.getId())
+                        .header(header, userDto.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))

@@ -37,6 +37,7 @@ public class BookingDtoTest {
             itemDto,
             userDto,
             BookingStatus.WAITING);
+
     @Test
     void shouldTransformWithJsonProperty() {
         String json = mapper.writeValueAsString(bookingDto);

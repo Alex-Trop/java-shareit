@@ -115,7 +115,7 @@ public class ItemControllerTest {
 
     private CommentPostDto commentPostDto = new CommentPostDto("kjdfgkjdfkgjdfkdjg");
 
-    private final String HEADER = "X-Sharer-User-Id";
+    private final String header = "X-Sharer-User-Id";
 
     @Test
     void shouldAddItem() throws Exception {
@@ -124,7 +124,7 @@ public class ItemControllerTest {
 
         mvc.perform(post("/items")
                         .content(mapper.writeValueAsString(itemDto))
-                        .header(HEADER, 1L)
+                        .header(header, 1L)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -143,7 +143,7 @@ public class ItemControllerTest {
 
         mvc.perform(patch("/items/" + itemDto.getId())
                         .content(mapper.writeValueAsString(itemDto))
-                        .header(HEADER, 1L)
+                        .header(header, 1L)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -181,7 +181,7 @@ public class ItemControllerTest {
 
         mvc.perform(get("/items")
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(HEADER, 1L)
+                        .header(header, 1L)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -196,7 +196,7 @@ public class ItemControllerTest {
 
         mvc.perform(post("/items/1/comment")
                 .content(mapper.writeValueAsString(commentPostDto))
-                .header(HEADER, 1L)
+                .header(header, 1L)
                 .characterEncoding(StandardCharsets.UTF_8)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
