@@ -93,7 +93,7 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.end").value(bookingDto.getEnd().format(formatter)))
                 .andExpect(jsonPath("$.item.id").value(1))
                 .andExpect(jsonPath("$.booker.id").value(1))
-                .andExpect(jsonPath("$.status").value(bookingDto.getBookingStatus().toString()));
+                .andExpect(jsonPath("$.status").value(bookingDto.getBookingStatus().toValue()));
     }
 
     @Test
@@ -112,7 +112,7 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.end").value(bookingDto.getEnd().format(formatter)))
                 .andExpect(jsonPath("$.item.id").value(1))
                 .andExpect(jsonPath("$.booker.id").value(1))
-                .andExpect(jsonPath("$.status").value(bookingDto.getBookingStatus().toString()));
+                .andExpect(jsonPath("$.status").value(bookingDto.getBookingStatus().toValue()));
     }
 
     @Test
@@ -130,7 +130,7 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.end").value(bookingDto.getEnd().format(formatter)))
                 .andExpect(jsonPath("$.item.id").value(1))
                 .andExpect(jsonPath("$.booker.id").value(1))
-                .andExpect(jsonPath("$.status").value(bookingDto.getBookingStatus().toString()));
+                .andExpect(jsonPath("$.status").value(bookingDto.getBookingStatus().toValue()));
     }
 
     @Test
