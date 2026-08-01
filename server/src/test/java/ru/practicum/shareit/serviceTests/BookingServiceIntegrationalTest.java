@@ -233,6 +233,58 @@ public class BookingServiceIntegrationalTest extends BaseIntegrationalTest {
     }
 
     @Test
+    void shouldGetUserBookingsByDefaultState() {
+        UserDto addedOwnerDto = userService.add(ownerDto);
+        UserDto addedBookerDto = userService.add(bookerDto);
+        ItemDto addedItemDto = itemService.add(itemDto, addedOwnerDto.getId());
+
+        BookingPostDto postDto = new BookingPostDto(
+                addedItemDto.getId(),
+                LocalDateTime.of(2000, 12, 18, 12, 0),
+                LocalDateTime.of(2000, 12, 23,12, 0));
+
+        BookingDto addedPastBooking = bookingService.add(postDto, addedBookerDto.getId());
+
+        BookingPostDto anotherPostDto = new BookingPostDto(
+                addedItemDto.getId(),
+                LocalDateTime.of(2030, 12, 18, 12, 0),
+                LocalDateTime.of(2030, 12, 23,12, 0));
+
+        BookingDto addedFutureBooking = bookingService.add(anotherPostDto, addedBookerDto.getId());
+
+        List<BookingDto> foundBookings = bookingService.getUserBookings("ALL", addedBookerDto.getId(),
+                LocalDateTime.now());
+
+        assertEquals(foundBookings.size(), 2);
+    }
+
+    @Test
+    void shouldGetUserBookingsByStateWaiting() {
+        UserDto addedOwnerDto = userService.add(ownerDto);
+        UserDto addedBookerDto = userService.add(bookerDto);
+        ItemDto addedItemDto = itemService.add(itemDto, addedOwnerDto.getId());
+
+        BookingPostDto postDto = new BookingPostDto(
+                addedItemDto.getId(),
+                LocalDateTime.of(2000, 12, 18, 12, 0),
+                LocalDateTime.of(2000, 12, 23,12, 0));
+
+        BookingDto addedPastBooking = bookingService.add(postDto, addedBookerDto.getId());
+
+        BookingPostDto anotherPostDto = new BookingPostDto(
+                addedItemDto.getId(),
+                LocalDateTime.of(2030, 12, 18, 12, 0),
+                LocalDateTime.of(2030, 12, 23,12, 0));
+
+        BookingDto addedFutureBooking = bookingService.add(anotherPostDto, addedBookerDto.getId());
+
+        List<BookingDto> foundBookings = bookingService.getUserBookings("waiting", addedBookerDto.getId(),
+                LocalDateTime.now());
+
+        assertEquals(foundBookings.size(), 2);
+    }
+
+    @Test
     void shouldGetOwnerBookingsByStatePast() {
         UserDto addedOwnerDto = userService.add(ownerDto);
         UserDto anotherOwnerDto = new UserDto(
@@ -303,6 +355,58 @@ public class BookingServiceIntegrationalTest extends BaseIntegrationalTest {
         assertEquals(foundBookings.get(0).getId(), addedFutureBooking.getId());
         assertEquals(foundBookings.get(0).getStart(), addedFutureBooking.getStart());
         assertEquals(foundBookings.get(0).getEnd(), addedFutureBooking.getEnd());
+    }
+
+    @Test
+    void shouldGetOwnerBookingsByDefaultState() {
+        UserDto addedOwnerDto = userService.add(ownerDto);
+        UserDto addedBookerDto = userService.add(bookerDto);
+        ItemDto addedItemDto = itemService.add(itemDto, addedOwnerDto.getId());
+
+        BookingPostDto postDto = new BookingPostDto(
+                addedItemDto.getId(),
+                LocalDateTime.of(2000, 12, 18, 12, 0),
+                LocalDateTime.of(2000, 12, 23,12, 0));
+
+        BookingDto addedPastBooking = bookingService.add(postDto, addedBookerDto.getId());
+
+        BookingPostDto anotherPostDto = new BookingPostDto(
+                addedItemDto.getId(),
+                LocalDateTime.of(2030, 12, 18, 12, 0),
+                LocalDateTime.of(2030, 12, 23,12, 0));
+
+        BookingDto addedFutureBooking = bookingService.add(anotherPostDto, addedBookerDto.getId());
+
+        List<BookingDto> foundBookings = bookingService.getOwnerBookings("ALL", addedOwnerDto.getId(),
+                LocalDateTime.now());
+
+        assertEquals(foundBookings.size(), 2);
+    }
+
+    @Test
+    void shouldGetOwnerBookingsByStateWaiting() {
+        UserDto addedOwnerDto = userService.add(ownerDto);
+        UserDto addedBookerDto = userService.add(bookerDto);
+        ItemDto addedItemDto = itemService.add(itemDto, addedOwnerDto.getId());
+
+        BookingPostDto postDto = new BookingPostDto(
+                addedItemDto.getId(),
+                LocalDateTime.of(2000, 12, 18, 12, 0),
+                LocalDateTime.of(2000, 12, 23,12, 0));
+
+        BookingDto addedPastBooking = bookingService.add(postDto, addedBookerDto.getId());
+
+        BookingPostDto anotherPostDto = new BookingPostDto(
+                addedItemDto.getId(),
+                LocalDateTime.of(2030, 12, 18, 12, 0),
+                LocalDateTime.of(2030, 12, 23,12, 0));
+
+        BookingDto addedFutureBooking = bookingService.add(anotherPostDto, addedBookerDto.getId());
+
+        List<BookingDto> foundBookings = bookingService.getOwnerBookings("waiting", addedOwnerDto.getId(),
+                LocalDateTime.now());
+
+        assertEquals(foundBookings.size(), 2);
     }
 
     @Test

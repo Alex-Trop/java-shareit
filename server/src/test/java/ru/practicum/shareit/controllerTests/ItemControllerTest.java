@@ -8,6 +8,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.exception.ResourceAlreadyExistsError;
 import ru.practicum.shareit.item.ItemController;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentPostDto;
@@ -30,6 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.exception.ErrorDetails.ITEM_DUPLICATE_ERROR;
 
 @WebMvcTest(controllers = ItemController.class)
 public class ItemControllerTest {
@@ -219,5 +221,19 @@ public class ItemControllerTest {
                         .andExpect(jsonPath("$.length()").value(2))
                         .andExpect(jsonPath("$[0].id").value(itemDto.getId()))
                         .andExpect(jsonPath("$[1].id").value(anotherItemDto.getId()));
+    }
+
+    @Test
+    void shouldThrowAlreadyExistsError() throws Exception {
+        when(itemService.add(any(), anyLong()))
+                .thenThrow(ResourceAlreadyExistsError.class);
+
+        mvc.perform(post("/items")
+                .content(mapper.writeValueAsString(itemDto))
+                .header(header, 1L)
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
     }
 }

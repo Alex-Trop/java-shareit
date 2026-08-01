@@ -40,8 +40,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static ru.practicum.shareit.exception.ErrorDetails.ITEM_DUPLICATE_ERROR;
-import static ru.practicum.shareit.exception.ErrorDetails.ITEM_NOT_FOUND;
+import static ru.practicum.shareit.exception.ErrorDetails.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -142,6 +141,42 @@ public class ItemServiceIntegrationalTest extends BaseIntegrationalTest {
                 () -> itemService.update(17L, itemDto, addedUser.getId()));
 
         assertEquals(error.getMessage(), ITEM_NOT_FOUND);
+    }
+
+    @Test
+    void shouldThrowErrorWhenUpdatedByNonExistentUser() {
+        UserDto addedUser = userService.add(userDto);
+        ItemDto addedItem = itemService.add(itemDto, addedUser.getId());
+        ItemDto newItem = new ItemDto(
+                null,
+                "pwpqpqpq",
+                "spspspsps",
+                true,
+                null);
+
+        NotFoundError error = assertThrows(NotFoundError.class,
+                () -> itemService.update(addedItem.getId(), newItem, addedUser.getId() + 1));
+
+        assertEquals(error.getMessage(), USER_NOT_FOUND);
+    }
+
+    @Test
+    void shouldThrowErrorWhenUpdatedByWrongOwner() {
+        UserDto addedUser = userService.add(userDto);
+        UserDto wrongOwner = userService.add(new UserDto(null, "aaaaa",
+                "qqqq@mail.ru"));
+        ItemDto addedItem = itemService.add(itemDto, addedUser.getId());
+        ItemDto newItem = new ItemDto(
+                null,
+                "pwpqpqpq",
+                "spspspsps",
+                true,
+                null);
+
+        NotFoundError error = assertThrows(NotFoundError.class,
+                () -> itemService.update(addedItem.getId(), newItem, wrongOwner.getId()));
+
+        assertEquals(error.getMessage(), WRONG_OWNER);
     }
 
     @Test
