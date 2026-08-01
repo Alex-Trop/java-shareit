@@ -33,8 +33,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static ru.practicum.shareit.exception.ErrorDetails.BOOKING_NOT_FOUND;
-import static ru.practicum.shareit.exception.ErrorDetails.USER_NOT_FOUND;
+import static ru.practicum.shareit.exception.ErrorDetails.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -131,6 +130,63 @@ public class BookingServiceIntegrationalTest extends BaseIntegrationalTest {
     }
 
     @Test
+    void shouldThrowErrorWhenApprovedByNonOwner() {
+        UserDto addedOwnerDto = userService.add(ownerDto);
+        UserDto addedBookerDto = userService.add(bookerDto);
+        ItemDto addedItemDto = itemService.add(itemDto, addedOwnerDto.getId());
+
+        BookingPostDto postDto = new BookingPostDto(
+                addedItemDto.getId(),
+                LocalDateTime.of(2000, 12, 18, 12, 0),
+                LocalDateTime.of(2000, 12, 23,12, 0));
+
+        BookingDto addedBooking = bookingService.add(postDto, addedBookerDto.getId());
+
+        RuntimeException exc = assertThrows(RuntimeException.class,
+                () -> bookingService.approve(addedBooking.getId(), true, addedOwnerDto.getId() + 1));
+
+        assertEquals(exc.getMessage(), WRONG_OWNER);
+    }
+
+    @Test
+    void shouldRejectBooking() {
+        UserDto addedOwnerDto = userService.add(ownerDto);
+        UserDto addedBookerDto = userService.add(bookerDto);
+        ItemDto addedItemDto = itemService.add(itemDto, addedOwnerDto.getId());
+
+        BookingPostDto postDto = new BookingPostDto(
+                addedItemDto.getId(),
+                LocalDateTime.of(2000, 12, 18, 12, 0),
+                LocalDateTime.of(2000, 12, 23,12, 0));
+
+        BookingDto addedBooking = bookingService.add(postDto, addedBookerDto.getId());
+
+        BookingDto rejectedBooking = bookingService.approve(addedBooking.getId(), false,
+                addedOwnerDto.getId());
+
+        assertEquals(rejectedBooking.getBookingStatus(), BookingStatus.REJECTED);
+    }
+
+    @Test
+    void shouldThrowAccessDenied() {
+        UserDto addedOwnerDto = userService.add(ownerDto);
+        UserDto addedBookerDto = userService.add(bookerDto);
+        ItemDto addedItemDto = itemService.add(itemDto, addedOwnerDto.getId());
+
+        BookingPostDto postDto = new BookingPostDto(
+                addedItemDto.getId(),
+                LocalDateTime.of(2000, 12, 18, 12, 0),
+                LocalDateTime.of(2000, 12, 23,12, 0));
+
+        BookingDto addedBooking = bookingService.add(postDto, addedBookerDto.getId());
+        Long wrongId = addedBookerDto.getId() + addedOwnerDto.getId();
+        NotFoundError error = assertThrows(NotFoundError.class,
+                () -> bookingService.getBooking(addedBooking.getId(), wrongId));
+
+        assertEquals(error.getMessage(), ACCESS_DENIED);
+    }
+
+    @Test
     void shouldGetUserBookingsByStatePast() {
         UserDto addedOwnerDto = userService.add(ownerDto);
         UserDto addedBookerDto = userService.add(bookerDto);
@@ -208,10 +264,34 @@ public class BookingServiceIntegrationalTest extends BaseIntegrationalTest {
 
         BookingDto addedFutureBooking = bookingService.add(anotherPostDto, addedBookerDto.getId());
 
-        List<BookingDto> foundBookings = bookingService.getUserBookings("rejected", addedBookerDto.getId(),
+        List<BookingDto> foundBookings = bookingService.getOwnerBookings("rejected", addedOwnerDto.getId(),
                 LocalDateTime.now());
 
         assertTrue(foundBookings.isEmpty());
+    }
+
+    @Test
+    void shouldReturnEmptyListForOwnerWhenStateRejected() {
+        UserDto addedOwnerDto = userService.add(ownerDto);
+        UserDto addedBookerDto = userService.add(bookerDto);
+        ItemDto addedItemDto = itemService.add(itemDto, addedOwnerDto.getId());
+
+        BookingPostDto postDto = new BookingPostDto(
+                addedItemDto.getId(),
+                LocalDateTime.of(2000, 12, 18, 12, 0),
+                LocalDateTime.of(2000, 12, 23,12, 0));
+
+        BookingDto addedPastBooking = bookingService.add(postDto, addedBookerDto.getId());
+
+        BookingPostDto anotherPostDto = new BookingPostDto(
+                addedItemDto.getId(),
+                LocalDateTime.of(2030, 12, 18, 12, 0),
+                LocalDateTime.of(2030, 12, 23,12, 0));
+
+        BookingDto addedFutureBooking = bookingService.add(anotherPostDto, addedBookerDto.getId());
+
+        List<BookingDto> foundBookings = bookingService.getUserBookings("future", addedBookerDto.getId(),
+                LocalDateTime.now());
     }
 
     @Test
